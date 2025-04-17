@@ -27,8 +27,7 @@
     autoplay 
     controlsList="nodownload noremoteplayback" 
     disablePictureInPicture 
-    oncontextmenu="return false" 
-    allowfullscreen>
+    oncontextmenu="return false">
     <source src="https://raw.githubusercontent.com/machGhosTine/captivateVideos/main/GMT20250401-143643_Clip_Slack%20101_%20Slack%20On%20Your%20Phone.mp4" type="video/mp4">
     Your browser does not support the video tag.
   </video>
@@ -37,20 +36,20 @@
     const video = document.getElementById('trainingVideo');
     const STORAGE_KEY = 'video-resume-time';
 
-    // Resume saved time
-    video.addEventListener('loadedmetadata', () => {
-      const savedTime = parseFloat(localStorage.getItem(STORAGE_KEY));
-      if (!isNaN(savedTime)) {
-        video.currentTime = savedTime;
+    // Load from localStorage
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedTime = localStorage.getItem(STORAGE_KEY);
+      if (savedTime) {
+        video.currentTime = parseFloat(savedTime);
       }
     });
 
-    // Save progress every second
+    // Save playback time
     video.addEventListener('timeupdate', () => {
       localStorage.setItem(STORAGE_KEY, video.currentTime);
     });
 
-    // Prevent skipping ahead
+    // Prevent skipping forward
     let lastTime = 0;
     video.addEventListener('timeupdate', () => {
       if (video.currentTime > lastTime + 1) {
@@ -59,13 +58,6 @@
         lastTime = video.currentTime;
       }
     });
-
-    // Function to reset (if called externally)
-    function resetVideo() {
-      localStorage.setItem(STORAGE_KEY, 0);
-      video.currentTime = 0;
-      video.play();
-    }
   </script>
 </body>
 </html>
