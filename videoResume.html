@@ -28,38 +28,36 @@
     controlsList="nodownload noremoteplayback" 
     disablePictureInPicture 
     oncontextmenu="return false" 
-    allowfullscreen
-  >
+    allowfullscreen>
     <source src="https://raw.githubusercontent.com/machGhosTine/captivateVideos/main/GMT20250401-143643_Clip_Slack%20101_%20Slack%20On%20Your%20Phone.mp4" type="video/mp4">
     Your browser does not support the video tag.
   </video>
 
   <script>
     const video = document.getElementById('trainingVideo');
-    const STORAGE_KEY = 'resumeTime';
-    const SEEK_THRESHOLD = 2;
+    const STORAGE_KEY = 'video-resume-time';
 
-    // Load saved timestamp
-    const savedTime = parseFloat(localStorage.getItem(STORAGE_KEY));
-    if (!isNaN(savedTime)) {
-      video.currentTime = savedTime;
-    }
-
-    let lastTime = video.currentTime;
-
-    // Save current time
-    video.addEventListener('timeupdate', () => {
-      if (Math.abs(video.currentTime - lastTime) > SEEK_THRESHOLD) {
-        video.currentTime = lastTime;
-      } else {
-        lastTime = video.currentTime;
-        localStorage.setItem(STORAGE_KEY, lastTime);
+    // On load, try to resume from saved time
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedTime = localStorage.getItem(STORAGE_KEY);
+      if (savedTime) {
+        video.currentTime = parseFloat(savedTime);
       }
     });
 
-    // Clear saved time on end (optional)
-    video.addEventListener('ended', () => {
-      localStorage.removeItem(STORAGE_KEY);
+    // On time update, save progress
+    video.addEventListener('timeupdate', () => {
+      localStorage.setItem(STORAGE_KEY, video.currentTime);
+    });
+
+    // Prevent skipping forward
+    let lastTime = 0;
+    video.addEventListener('timeupdate', () => {
+      if (video.currentTime > lastTime + 1) {
+        video.currentTime = lastTime;
+      } else {
+        lastTime = video.currentTime;
+      }
     });
   </script>
 </body>
