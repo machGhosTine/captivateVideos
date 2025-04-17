@@ -39,7 +39,7 @@
     const STORAGE_KEY = 'resumeTime';
     const SEEK_THRESHOLD = 2;
 
-    // Load saved timestamp
+    // load the timestamp to resume
     const savedTime = parseFloat(localStorage.getItem(STORAGE_KEY));
     if (!isNaN(savedTime)) {
       video.currentTime = savedTime;
@@ -47,7 +47,7 @@
 
     let lastTime = video.currentTime;
 
-    // Save current time
+    // set a timestampt if user kills the tab/whatever
     video.addEventListener('timeupdate', () => {
       if (Math.abs(video.currentTime - lastTime) > SEEK_THRESHOLD) {
         video.currentTime = lastTime;
@@ -57,10 +57,18 @@
       }
     });
 
-    // Clear saved time on end (optional)
+    // clears saved time if video is completed
     video.addEventListener('ended', () => {
       localStorage.removeItem(STORAGE_KEY);
     });
+
+    // bring video back to beginning from captivate reply button (otherwise it retuns at last timestamp)
+    function resetVideo() {
+      if (video) {
+        video.currentTime = 0;
+        video.play();
+      }
+    }
   </script>
 </body>
 </html>
