@@ -33,40 +33,40 @@
     Your browser does not support the video tag.
   </video>
 
-<script>
-  const video = document.getElementById('trainingVideo');
-  const STORAGE_KEY = 'video-resume-time';
+  <script>
+    const video = document.getElementById('trainingVideo');
+    const STORAGE_KEY = 'video-resume-time';
+    let lastTime = 0;
 
-  // On load, try to resume from saved time
-  window.addEventListener('DOMContentLoaded', () => {
-    const savedTime = localStorage.getItem(STORAGE_KEY);
-    if (savedTime) {
-      video.currentTime = parseFloat(savedTime);
+    // Resume from saved time
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedTime = localStorage.getItem(STORAGE_KEY);
+      if (savedTime && !isNaN(savedTime)) {
+        video.currentTime = parseFloat(savedTime);
+      }
+    });
+
+    // Save time & prevent skipping in one listener
+    video.addEventListener('timeupdate', () => {
+      const current = video.currentTime;
+
+      // Prevent skipping ahead
+      if (current > lastTime + 1) {
+        video.currentTime = lastTime;
+      } else {
+        lastTime = current;
+        localStorage.setItem(STORAGE_KEY, current);
+      }
+    });
+
+    // Optional resetVideo function if you trigger from Captivate
+    function resetVideo() {
+      if (video) {
+        localStorage.removeItem(STORAGE_KEY);
+        video.currentTime = 0;
+        video.play();
+      }
     }
-  });
-
-  // On time update, save progress
-  video.addEventListener('timeupdate', () => {
-    localStorage.setItem(STORAGE_KEY, video.currentTime);
-  });
-
-  // Prevent skipping forward
-  let lastTime = 0;
-  video.addEventListener('timeupdate', () => {
-    if (video.currentTime > lastTime + 1) {
-      video.currentTime = lastTime;
-    } else {
-      lastTime = video.currentTime;
-    }
-  });
-
-  // 🔁 Reset video playback (to be called from Captivate)
-  function resetVideo() {
-    if (video) {
-      video.currentTime = 0;
-      video.play();
-    }
-  }
-</script>
+  </script>
 </body>
 </html>
