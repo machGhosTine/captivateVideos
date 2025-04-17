@@ -21,13 +21,13 @@
   </style>
 </head>
 <body>
-  <video
-    id="trainingVideo"
-    controls
-    autoplay
-    controlsList="nodownload noremoteplayback"
-    disablePictureInPicture
-    oncontextmenu="return false"
+  <video 
+    id="trainingVideo" 
+    controls 
+    autoplay 
+    controlsList="nodownload noremoteplayback" 
+    disablePictureInPicture 
+    oncontextmenu="return false" 
     allowfullscreen
   >
     <source src="https://raw.githubusercontent.com/machGhosTine/captivateVideos/main/GMT20250401-143643_Clip_Slack%20101_%20Slack%20On%20Your%20Phone.mp4" type="video/mp4">
@@ -36,36 +36,31 @@
 
   <script>
     const video = document.getElementById('trainingVideo');
-    const STORAGE_KEY = 'video-resume-time';
-    let lastTime = 0;
+    const STORAGE_KEY = 'resumeTime';
+    const SEEK_THRESHOLD = 2;
 
-    video.addEventListener('loadedmetadata', () => {
-      const savedTime = localStorage.getItem(STORAGE_KEY);
-      if (savedTime) {
-        video.currentTime = parseFloat(savedTime);
-      }
-    });
+    // Load saved timestamp
+    const savedTime = parseFloat(localStorage.getItem(STORAGE_KEY));
+    if (!isNaN(savedTime)) {
+      video.currentTime = savedTime;
+    }
 
+    let lastTime = video.currentTime;
+
+    // Save current time
     video.addEventListener('timeupdate', () => {
-      // Save resume time
-      localStorage.setItem(STORAGE_KEY, video.currentTime);
-
-      // Prevent skipping forward
-      if (video.currentTime > lastTime + 1) {
+      if (Math.abs(video.currentTime - lastTime) > SEEK_THRESHOLD) {
         video.currentTime = lastTime;
       } else {
         lastTime = video.currentTime;
+        localStorage.setItem(STORAGE_KEY, lastTime);
       }
     });
 
-    // Reset function for Captivate
-    function resetVideo() {
-      if (video) {
-        localStorage.removeItem(STORAGE_KEY);
-        video.currentTime = 0;
-        video.play();
-      }
-    }
+    // Clear saved time on end (optional)
+    video.addEventListener('ended', () => {
+      localStorage.removeItem(STORAGE_KEY);
+    });
   </script>
 </body>
 </html>
