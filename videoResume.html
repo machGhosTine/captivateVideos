@@ -33,32 +33,40 @@
     Your browser does not support the video tag.
   </video>
 
-  <script>
-    const video = document.getElementById('trainingVideo');
-    const STORAGE_KEY = 'video-resume-time';
+<script>
+  const video = document.getElementById('trainingVideo');
+  const STORAGE_KEY = 'video-resume-time';
 
-    // On load, try to resume from saved time
-    window.addEventListener('DOMContentLoaded', () => {
-      const savedTime = localStorage.getItem(STORAGE_KEY);
-      if (savedTime) {
-        video.currentTime = parseFloat(savedTime);
-      }
-    });
+  // On load, try to resume from saved time
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedTime = localStorage.getItem(STORAGE_KEY);
+    if (savedTime) {
+      video.currentTime = parseFloat(savedTime);
+    }
+  });
 
-    // On time update, save progress
-    video.addEventListener('timeupdate', () => {
-      localStorage.setItem(STORAGE_KEY, video.currentTime);
-    });
+  // On time update, save progress
+  video.addEventListener('timeupdate', () => {
+    localStorage.setItem(STORAGE_KEY, video.currentTime);
+  });
 
-    // Prevent skipping forward
-    let lastTime = 0;
-    video.addEventListener('timeupdate', () => {
-      if (video.currentTime > lastTime + 1) {
-        video.currentTime = lastTime;
-      } else {
-        lastTime = video.currentTime;
-      }
-    });
-  </script>
+  // Prevent skipping forward
+  let lastTime = 0;
+  video.addEventListener('timeupdate', () => {
+    if (video.currentTime > lastTime + 1) {
+      video.currentTime = lastTime;
+    } else {
+      lastTime = video.currentTime;
+    }
+  });
+
+  // 🔁 Reset video playback (to be called from Captivate)
+  function resetVideo() {
+    if (video) {
+      video.currentTime = 0;
+      video.play();
+    }
+  }
+</script>
 </body>
 </html>
