@@ -36,36 +36,35 @@
   <script>
     const video = document.getElementById('trainingVideo');
     const STORAGE_KEY = 'video-resume-time';
-    let lastTime = 0;
 
-    // Resume from saved time
-    window.addEventListener('DOMContentLoaded', () => {
-      const savedTime = localStorage.getItem(STORAGE_KEY);
-      if (savedTime && !isNaN(savedTime)) {
-        video.currentTime = parseFloat(savedTime);
+    // Resume saved time
+    video.addEventListener('loadedmetadata', () => {
+      const savedTime = parseFloat(localStorage.getItem(STORAGE_KEY));
+      if (!isNaN(savedTime)) {
+        video.currentTime = savedTime;
       }
     });
 
-    // Save time & prevent skipping in one listener
+    // Save progress every second
     video.addEventListener('timeupdate', () => {
-      const current = video.currentTime;
+      localStorage.setItem(STORAGE_KEY, video.currentTime);
+    });
 
-      // Prevent skipping ahead
-      if (current > lastTime + 1) {
+    // Prevent skipping ahead
+    let lastTime = 0;
+    video.addEventListener('timeupdate', () => {
+      if (video.currentTime > lastTime + 1) {
         video.currentTime = lastTime;
       } else {
-        lastTime = current;
-        localStorage.setItem(STORAGE_KEY, current);
+        lastTime = video.currentTime;
       }
     });
 
-    // Optional resetVideo function if you trigger from Captivate
+    // Function to reset (if called externally)
     function resetVideo() {
-      if (video) {
-        localStorage.removeItem(STORAGE_KEY);
-        video.currentTime = 0;
-        video.play();
-      }
+      localStorage.setItem(STORAGE_KEY, 0);
+      video.currentTime = 0;
+      video.play();
     }
   </script>
 </body>
