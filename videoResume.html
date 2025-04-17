@@ -21,9 +21,22 @@
   </style>
 </head>
 <body>
-  <video controls autoplay>
+  <video id="trainingVideo" controls autoplay controlsList="nodownload noremoteplayback" disablePictureInPicture oncontextmenu="return false;">
     <source src="https://raw.githubusercontent.com/machGhosTine/captivateVideos/main/GMT20250401-143643_Clip_Slack%20101_%20Slack%20On%20Your%20Phone.mp4" type="video/mp4">
     Your browser does not support the video tag.
   </video>
+
+  <script>
+    const video = document.getElementById('trainingVideo');
+    let lastTime = 0;
+
+    video.addEventListener('timeupdate', () => {
+      if (Math.abs(video.currentTime - lastTime) > 1) {
+        video.currentTime = lastTime;
+      } else {
+        lastTime = video.currentTime;
+      }
+    });
+  </script>
 </body>
 </html>
